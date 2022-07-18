@@ -14,28 +14,27 @@
 
 pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./MexAccessControl.sol";
+import "../interfaces/IMexToken.sol";
 
-contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
+contract MexMigration is MexAccessControl { 
+
+    IMexToken mex;
+    IERC20 tcr;
     bool public mintingPaused;
 
-    event Snapshot(uint256 id);
+
+    event Migrated(address,uint);
 
     constructor(
         address admin,
-        string memory name,
-        string memory symbol
-    ) ERC20(name, symbol) ERC20Permit(name) {
-        _setupDecimals(18);
+        address _mex,
+        address _tcr
+    ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        _setupRole(MINTER_ROLE, admin);
-        _setupRole(SNAPSHOT_ROLE, admin);
+        mex = IERC20(_mex);
+        tcr = IERC20(_tcr);
     }
 
 
@@ -55,13 +54,19 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
          mintingPaused = false;
     }
 
-    function mint(address recipient, uint256 amount) external isMintingPaused{
-        require(hasRole(MINTER_ROLE, msg.sender), "NOT_MINTER");
-        _mint(recipient, amount);
+
+    function migrate()external isMintingPaused {
+        require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
+        bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
+        require(success, "TCR could not be transfered to this contract, check allowance");
+        if (mex.balanceOf(this(address)) !> tcr.balanceOf(msg.sender)){
+        mex.mint(this(address),tcr.balanceOf(msg.sender))
+        mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
+        } else {
+        mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
+        }
     }
 
-    function snapshot() external {
-        require(hasRole(SNAPSHOT_ROLE, msg.sender), "NOT_SNAPSHOTTER");
-        emit Snapshot(0);
-    }
+
+
 }
