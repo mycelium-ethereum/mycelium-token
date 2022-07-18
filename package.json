@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mycelium-ethereum/MexToken#readme",
   "devDependencies": {
+    "@openzeppelin/contracts": "^4.7.0",
     "hardhat": "^2.10.0"
   }
 }
