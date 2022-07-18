@@ -54,6 +54,12 @@ contract MexMigration is MexAccessControl {
          mintingPaused = false;
     }
 
+    function withdrawTokens(address token)external{
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
+        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(this(address)));
+        
+    }
+
 
     function migrate()external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
