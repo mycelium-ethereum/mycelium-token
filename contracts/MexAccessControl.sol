@@ -2,8 +2,8 @@
 
 pragma solidity ^0.7.0;
 
-import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/EnumerableSet.sol";
-import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/Address.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/address.sol";
 
 // This contract maintains the old AccessControl behaviour which is used by BalancerGovernanceToken in production
 
