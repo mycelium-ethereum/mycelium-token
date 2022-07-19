@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.1",
+    "erc20permit": "^0.1.1",
     "solc": "^0.8.15"
   }
 }

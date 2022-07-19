@@ -12,12 +12,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-
+import "./openzeppelin/ERC20.sol";
+import "./openzeppelin/ERC20Burnable.sol";
+import "./openzeppelin/ERC20Permit.sol";
 import "./MexAccessControl.sol";
 
 contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
@@ -38,19 +37,18 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
         _setupRole(SNAPSHOT_ROLE, admin);
     }
 
-
     modifier isMintingPaused() {
         require(!mintingPaused);
 
         _;
     }
 
-    function pauseMinting() {
+    function pauseMinting() external {
          require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
          mintingPaused = true;
     }
 
-    function resumeMinting() {
+    function resumeMinting() external {
          require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
          mintingPaused = false;
     }

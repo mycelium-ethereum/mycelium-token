@@ -12,11 +12,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/openzeppelin/IERC20.sol";
 import "./MexAccessControl.sol";
-import "../interfaces/IMexToken.sol";
+import "./interfaces/IMexToken.sol";
 
 contract MexMigration is MexAccessControl { 
 
@@ -33,7 +33,7 @@ contract MexMigration is MexAccessControl {
         address _tcr
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        mex = IERC20(_mex);
+        mex = IMexToken(_mex);
         tcr = IERC20(_tcr);
     }
 
@@ -44,29 +44,28 @@ contract MexMigration is MexAccessControl {
         _;
     }
 
-    function pauseMinting() {
+    function pauseMinting() external {
          require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
          mintingPaused = true;
     }
 
-    function resumeMinting() {
+    function resumeMinting() external {
          require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
          mintingPaused = false;
     }
 
     function withdrawTokens(address token)external{
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(this(address)));
-        
+       // IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(IERC20((address))));
     }
 
-
+    /*
     function migrate()external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
         bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
         require(success, "TCR could not be transfered to this contract, check allowance");
-        if (mex.balanceOf(this(address)) !> tcr.balanceOf(msg.sender)){
-        mex.mint(this(address),tcr.balanceOf(msg.sender))
+        if (mex.balanceOf(this(address)) != tcr.balanceOf(msg.sender)){
+        mex.mint(this(address),tcr.balanceOf(msg.sender));
         mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
         } else {
         mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
@@ -74,5 +73,5 @@ contract MexMigration is MexAccessControl {
     }
 
 
-
+    */
 }
