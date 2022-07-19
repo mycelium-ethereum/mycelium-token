@@ -15,6 +15,7 @@ To Deploy:
     API_URL=""
     PRIVATE_KEY=""
 
-'''
+```
 npx hardhat --network Network run scripts/deploy.js
-'''
+
+```
