@@ -12,8 +12,6 @@ contract MexNFT is ERC721URIStorage {
 
     Counters.Counter private _tokenIds;
     mapping (address => bool) public Wallets;
-
-    // Will have to be changed to IPFS link that is hosted via cloud or other solution.
     string nftURI = "https://ipfs.io/ipfs/QmcJ7gQR8D6iddZpZw1rqPk71JAE4tLwUnzfFktTDXiKZA";
 
     constructor() ERC721("MexNFT", "NFT") {}
