@@ -12,11 +12,8 @@ contract MexNFT is ERC721URIStorage {
 
     Counters.Counter private _tokenIds;
     mapping (address => bool) public Wallets;
-    IERC20 mexToken;
 
-    constructor(address _mexToken) ERC721("MexNFT", "NFT") {
-        mexToken = IERC20(_mexToken);
-    }
+    constructor() ERC721("MexNFT", "NFT") {}
 
     function setWallet(address recipient) private {
         Wallets[recipient]=true;
@@ -27,22 +24,16 @@ contract MexNFT is ERC721URIStorage {
       _;
     }
 
-    modifier checkMexBalance(address recipient) {
-      require(mexToken.balanceOf(msg.sender) > 0, "You cannot mint if you do not hold MEX");
-      _;
-    }
-
     /*
         Will be called from Front-end once Migrate call is complete. (should be unique to address)
         notMinted - prevents an address from minting multiple NFTS
         checkMexBalance - must have Mex token to call mintNFT Function.
     */
     function mintNFT(string memory tokenURI)
-        public notMinted(msg.sender) checkMexBalance(msg.sender)
+        public notMinted(msg.sender)
         returns (uint256)
     {
         _tokenIds.increment();
-
         uint256 newItemId = _tokenIds.current();
         _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, tokenURI);
