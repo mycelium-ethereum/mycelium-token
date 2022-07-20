@@ -13,6 +13,9 @@ contract MexNFT is ERC721URIStorage {
     Counters.Counter private _tokenIds;
     mapping (address => bool) public Wallets;
 
+    // Will have to be changed to IPFS link that is hosted via cloud or other solution.
+    string nftURI = "https://ipfs.io/ipfs/QmcJ7gQR8D6iddZpZw1rqPk71JAE4tLwUnzfFktTDXiKZA";
+
     constructor() ERC721("MexNFT", "NFT") {}
 
     function setWallet(address recipient) private {
@@ -29,14 +32,14 @@ contract MexNFT is ERC721URIStorage {
         notMinted - prevents an address from minting multiple NFTS
         checkMexBalance - must have Mex token to call mintNFT Function.
     */
-    function mintNFT(string memory tokenURI)
+    function mintNFT()
         public notMinted(msg.sender)
         returns (uint256)
     {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _mint(msg.sender, newItemId);
-        _setTokenURI(newItemId, tokenURI);
+        _setTokenURI(newItemId, nftURI);
 
         setWallet(msg.sender);
         return newItemId;
