@@ -13,33 +13,29 @@ contract MexNFT is ERC721URIStorage {
     Counters.Counter private _tokenIds;
     mapping (address => bool) public Wallets;
     string nftURI = "https://ipfs.io/ipfs/QmcJ7gQR8D6iddZpZw1rqPk71JAE4tLwUnzfFktTDXiKZA";
+    address private migrateContract ;
 
-    constructor() ERC721("MexNFT", "NFT") {}
-
-    function setWallet(address recipient) private {
-        Wallets[recipient]=true;
+    constructor(address _migrateContract) ERC721("MexNFT", "NFT") {
+        migrateContract = _migrateContract;
     }
 
-    modifier notMinted(address recipient) {
-      require(!Wallets[recipient], "Sender already has NFT");
-      _;
-    }
+    
+    modifier onlyCreator() {
+        require(msg.sender == migrateContract, "Only migrate contract can call mint function"); // If it is incorrect here, it reverts.
+        _;                       
+    } 
+    
 
     /*
-        Will be called from Front-end once Migrate call is complete. (should be unique to address)
+        Called directly via migrate contract.
         notMinted - prevents an address from minting multiple NFTS
-        checkMexBalance - must have Mex token to call mintNFT Function.
     */
-    function mintNFT()
-        public notMinted(msg.sender)
-        returns (uint256)
+    function mintNFT(address _to) external onlyCreator
     {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _mint(msg.sender, newItemId);
+        _mint(_to, newItemId);
         _setTokenURI(newItemId, nftURI);
 
-        setWallet(msg.sender);
-        return newItemId;
     }
 }

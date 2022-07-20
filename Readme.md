@@ -28,3 +28,8 @@ ipfs daemon
 ipfs add art.jpeg
 ipfs add tokenURI.json
 ```
+
+For Testing:
+  - Added waffle to easily check revert statements
+  - added mocha chai
+  - npm run build produces json outputs

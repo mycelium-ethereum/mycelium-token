@@ -22,21 +22,42 @@ contract MexMigration is MexAccessControl {
 
     IMexToken mex;
     IERC20 tcr;
+    MexNFT mexMFT;
     bool public mintingPaused;
-
+    mapping (address => bool) public Wallets;
 
     event Migrated(address,uint);
 
     constructor(
         address admin,
         address _mex,
-        address _tcr
+        address _tcr,
+        address _mexNFT
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         mex = IMexToken(_mex);
         tcr = IERC20(_tcr);
+        mexMFT = MexNFT();
     }
 
+
+    function setWallet(address recipient) private {
+        Wallets[recipient]=true;
+    }
+
+    modifier notMinted(address recipient) {
+      require(!Wallets[recipient], "Sender already has NFT");
+      _;
+    }
+
+    // Call directly from migrate function
+    function mintMexNFT(address _to) private notMinted(_to) 
+    {   
+        require(mex.balanceOf(msg.sender)> 0, "Have Not Migrated");
+        mexMFT.mintNFT(_to);
+        setWallet(_to);
+    }
+    
 
     modifier isMintingPaused() {
         require(!mintingPaused);
@@ -60,6 +81,7 @@ contract MexMigration is MexAccessControl {
     }
 
     /*
+    Will have to call mint function here and pass address of original caller as arg.
     function migrate()external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
         bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
