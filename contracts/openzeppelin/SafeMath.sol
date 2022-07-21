@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.9;
 
-import "./BalancerErrors.sol";
-
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
  * checks.
@@ -30,7 +28,7 @@ library SafeMath {
      */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        _require(c >= a, Errors.ADD_OVERFLOW);
+        require(c >= a, "ADD_OVERFLOW");
 
         return c;
     }
@@ -46,7 +44,7 @@ library SafeMath {
      * - Subtraction cannot overflow.
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, Errors.SUB_OVERFLOW);
+        return sub(a, b, "SUB_OVERFLOW");
     }
 
     /**
@@ -62,9 +60,9 @@ library SafeMath {
     function sub(
         uint256 a,
         uint256 b,
-        uint256 errorCode
+        string memory errorCode
     ) internal pure returns (uint256) {
-        _require(b <= a, errorCode);
+        require(b <= a, errorCode);
         uint256 c = a - b;
 
         return c;

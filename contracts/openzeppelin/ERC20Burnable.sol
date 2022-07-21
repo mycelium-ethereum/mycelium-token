@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.9;
 
-import "./ERC20.sol";
-
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./SafeMath.sol";
 /**
  * @dev Extension of {ERC20} that allows token holders to destroy both their own
  * tokens and those that they have an allowance for, in a way that can be
@@ -11,7 +11,6 @@ import "./ERC20.sol";
  */
 abstract contract ERC20Burnable is ERC20 {
     using SafeMath for uint256;
-
     /**
      * @dev Destroys `amount` tokens from the caller.
      *
@@ -33,7 +32,7 @@ abstract contract ERC20Burnable is ERC20 {
      * `amount`.
      */
     function burnFrom(address account, uint256 amount) public virtual {
-        uint256 decreasedAllowance = allowance(account, msg.sender).sub(amount, Errors.ERC20_BURN_EXCEEDS_ALLOWANCE);
+        uint256 decreasedAllowance = allowance(account, msg.sender).sub(amount, "ERC20_BURN_EXCEEDS_ALLOWANCE");
 
         _approve(account, msg.sender, decreasedAllowance);
         _burn(account, amount);

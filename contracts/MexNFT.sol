@@ -37,6 +37,5 @@ contract MexNFT is ERC721URIStorage, Ownable {
         uint256 newItemId = _tokenIds.current();
         _mint(_to, newItemId);
         _setTokenURI(newItemId, nftURI);
-
     }
 }

@@ -14,7 +14,7 @@
 
 pragma solidity ^0.8.9;
 
-import "./openzeppelin/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./openzeppelin/ERC20Burnable.sol";
 import "./openzeppelin/ERC20Permit.sol";
 import "./MexAccessControl.sol";
@@ -23,6 +23,8 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
     bool public mintingPaused;
+    uint8 private _decimals;
+
 
     event Snapshot(uint256 id);
 
@@ -41,6 +43,10 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
         require(!mintingPaused);
 
         _;
+    }
+
+    function _setupDecimals(uint8 decimals_) internal {
+        _decimals = decimals_;
     }
 
     function pauseMinting() external {

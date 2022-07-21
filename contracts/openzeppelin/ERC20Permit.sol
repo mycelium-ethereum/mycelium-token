@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 
 import "../interfaces/openzeppelin/IERC20Permit.sol";
  
-import "./ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./EIP712.sol";
 
 /**
@@ -47,7 +47,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
         bytes32 s
     ) public virtual override {
         // solhint-disable-next-line not-rely-on-time
-        _require(block.timestamp <= deadline, Errors.EXPIRED_PERMIT);
+        require(block.timestamp <= deadline, "EXPIRED_PERMIT");
 
         uint256 nonce = _nonces[owner];
         bytes32 structHash = keccak256(abi.encode(_PERMIT_TYPEHASH, owner, spender, value, nonce, deadline));
@@ -55,7 +55,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712 {
         bytes32 hash = _hashTypedDataV4(structHash);
 
         address signer = ecrecover(hash, v, r, s);
-        _require((signer != address(0)) && (signer == owner), Errors.INVALID_SIGNATURE);
+        require((signer != address(0)) && (signer == owner), "INVALID_SIGNATURE");
 
         _nonces[owner] = nonce + 1;
         _approve(owner, spender, value);
