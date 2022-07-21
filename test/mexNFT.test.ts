@@ -43,7 +43,7 @@ describe("MexNFT", function () {
 			await expect(MexNFT.mintNFT(_to.address)).to.be.reverted;
 		});
 
-		it("Minter Address not set", async () => {
+		it("Minter Address not set in nft contract not set", async () => {
 			await expect(Migrate.mintMyceliumNFT(_to.address)).to.be.reverted;
 		});
 
@@ -52,9 +52,12 @@ describe("MexNFT", function () {
 			await expect(Migrate.mintMyceliumNFT(_to.address)).to.be.reverted;
 		});
 
+		/*
+			Mint token to address to pass require check
+			Set minter address to migrate contract
+			Call mint function 
+		*/
 		it("Migrate Contract Should be able to mint ", async () => {
-			//Will need to add mex balance to make sure this works.
-			// add mex token.
 			await MexToken.connect(owner).grantRole(MINTER_ROLE, _to.address);
 			await MexToken.mint(_to.address, 1000);
 			await MexNFT.setMinterAddress(Migrate.address);

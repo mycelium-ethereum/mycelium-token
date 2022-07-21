@@ -51,7 +51,10 @@ contract MexMigration is MexAccessControl {
       _;
     }
 
-    // Call directly from migrate function
+    
+    /*
+        When migrate function is implented this will be changed to internal and called directly from it during a successful swap.
+    */
     function mintMyceliumNFT(address _to) external notMinted(_to)
     {   
         require(mex.balanceOf(_to) > 0, "Have Not Migrated");
@@ -76,25 +79,30 @@ contract MexMigration is MexAccessControl {
          mintingPaused = false;
     }
 
+    /*
+        Do not see the requirement for this function
+        Commenting out as its not implmented correctly
     function withdrawTokens(address token)external{
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-       // IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(IERC20((address))));
+        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(IERC20((address))));
     }
+    */
 
-    /*
-    Will have to call mint function here and pass address of original caller as arg.
+
+    
+    /* 
+        Commenting out for now as logic fails and is not compiling.
     function migrate()external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
         bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
         require(success, "TCR could not be transfered to this contract, check allowance");
-        if (mex.balanceOf(this(address)) != tcr.balanceOf(msg.sender)){
+        if (mex.balanceOf(this(address)) > tcr.balanceOf(msg.sender)){
         mex.mint(this(address),tcr.balanceOf(msg.sender));
         mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
         } else {
         mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
         }
     }
-
-
     */
+
 }
