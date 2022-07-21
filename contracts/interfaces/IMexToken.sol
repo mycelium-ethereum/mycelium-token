@@ -13,8 +13,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.8.9;
-
-import "../interfaces/openzeppelin/IERC20.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 interface IMexToken is IERC20 {
     function mint(address to, uint256 amount) external;
