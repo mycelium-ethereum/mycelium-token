@@ -55,7 +55,7 @@ contract MexMigration is MexAccessControl {
     /*
         When migrate function is implented this will be changed to internal and called directly from it during a successful swap.
     */
-    function mintMyceliumNFT(address _to) external notMinted(_to)
+    function mintMyceliumNFT(address _to) internal notMinted(_to)
     {   
         require(mex.balanceOf(_to) > 0, "Have Not Migrated");
         mexNFT.mintNFT(_to);
@@ -89,20 +89,19 @@ contract MexMigration is MexAccessControl {
     */
 
 
-    
-    /* 
-        Commenting out for now as logic fails and is not compiling.
-    function migrate()external isMintingPaused {
+    function migrate() external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
+        bool success = tcr.transferFrom(msg.sender, address(this), tcr.balanceOf(msg.sender));
         require(success, "TCR could not be transfered to this contract, check allowance");
-        if (mex.balanceOf(this(address)) > tcr.balanceOf(msg.sender)){
-        mex.mint(this(address),tcr.balanceOf(msg.sender));
-        mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
+        if (mex.balanceOf(address(this)) > tcr.balanceOf(msg.sender)){
+            mex.mint(address(this),tcr.balanceOf(msg.sender));
+            mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
+            mintMyceliumNFT(msg.sender);
         } else {
-        mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
+            mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
+            mintMyceliumNFT(msg.sender);
         }
     }
-    */
+    
 
 }
