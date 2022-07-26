@@ -63,9 +63,5 @@ describe("MexNFT", function () {
 			await MexNFT.setMinterAddress(Migrate.address);
 			await expect(Migrate.mintMyceliumNFT(_to.address)).to.be.ok;
 		});
-
-		it("Migrate Contract Should be able to mint ", async () => {
-			await expect(Migrate.mintMyceliumNFT(_to.address)).to.be.reverted;
-		});
 	});
 });
