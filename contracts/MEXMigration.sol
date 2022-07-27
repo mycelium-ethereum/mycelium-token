@@ -47,7 +47,7 @@ contract MexMigration is MexAccessControl {
     }
 
     modifier notMinted(address _to) {
-      require(!Wallets[_to], "Sender already has NFT");
+      require(!wallets[_to], "Sender already has NFT");
       _;
     }
 
