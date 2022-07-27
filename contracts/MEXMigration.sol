@@ -61,15 +61,15 @@ contract MexMigration is MexAccessControl {
     }
 
 
-    function migrate()external isMintingPaused {
+    function migrate(uint amount)external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(msg.sender, this(address), tcr.balanceOf(msg.sender));
+        bool success = tcr.transferFrom(msg.sender, this(address), amount);
         require(success, "TCR could not be transfered to this contract, check allowance");
         if (mex.balanceOf(this(address)) !> tcr.balanceOf(msg.sender)){
-        mex.mint(this(address),tcr.balanceOf(msg.sender))
-        mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
+        mex.mint(this(address),amount)
+        mex.transfer(msg.sender, amount);
         } else {
-        mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
+        mex.transfer(msg.sender, amount); 
         }
     }
 
