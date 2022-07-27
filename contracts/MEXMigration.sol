@@ -43,7 +43,7 @@ contract MexMigration is MexAccessControl {
 
 
     function setWallet(address recipient) private {
-        Wallets[recipient]=true;
+        wallets[recipient] = true;
     }
 
     modifier notMinted(address _to) {
