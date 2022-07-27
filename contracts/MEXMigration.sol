@@ -56,17 +56,17 @@ contract MexMigration is MexAccessControl {
 
     function withdrawTokens(address token)external{
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(this(address)));
+        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(address(this)));
         
     }
 
 
     function migrate(uint amount)external isMintingPaused {
         require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(msg.sender, this(address), amount);
+        bool success = tcr.transferFrom(msg.sender, address(this), amount);
         require(success, "TCR could not be transfered to this contract, check allowance");
-        if (mex.balanceOf(this(address)) !> tcr.balanceOf(msg.sender)){
-        mex.mint(this(address),amount)
+        if (mex.balanceOf(address(this)) !> amount){
+        mex.mint(address(this),amount)
         mex.transfer(msg.sender, amount);
         } else {
         mex.transfer(msg.sender, amount); 
