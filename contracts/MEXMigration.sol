@@ -25,7 +25,7 @@ contract MexMigration is MexAccessControl {
     IERC20 tcr;
     MexNFT mexNFT;
     bool public mintingPaused;
-    mapping (address => bool) public Wallets;
+    mapping (address => bool) public wallets;
 
     event Migrated(address,uint);
 
@@ -41,32 +41,15 @@ contract MexMigration is MexAccessControl {
         mexNFT = MexNFT(_mexNFT);
     }
 
-
     function setWallet(address recipient) private {
         wallets[recipient] = true;
     }
 
-    modifier notMinted(address _to) {
-      require(!wallets[_to], "Sender already has NFT");
-      _;
-    }
-
-    
-    /*
-        When migrate function is implented this will be changed to internal and called directly from it during a successful swap.
-    */
     function mintMyceliumNFT(address _to) internal notMinted(_to)
     {   
         require(mex.balanceOf(_to) > 0, "Have Not Migrated");
-        mexNFT.mintNFT(_to);
         setWallet(_to);
-    }
-    
-
-    modifier isMintingPaused() {
-        require(!mintingPaused);
-
-        _;
+        mexNFT.mintNFT(_to);
     }
 
     function pauseMinting() external {
@@ -79,29 +62,33 @@ contract MexMigration is MexAccessControl {
          mintingPaused = false;
     }
 
-    /*
-        Do not see the requirement for this function
-        Commenting out as its not implmented correctly
-    function withdrawTokens(address token)external{
+    
+    function withdrawTokens(address token) external isTCR(token) {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        IERC20(address).transfer(msg.sender, IERC20(address).balanceOf(IERC20((address))));
-    }
-    */
-
-
-    function migrate() external isMintingPaused {
-        require(tcr.balanceOf(msg.sender)> 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(msg.sender, address(this), tcr.balanceOf(msg.sender));
-        require(success, "TCR could not be transfered to this contract, check allowance");
-        if (mex.balanceOf(address(this)) > tcr.balanceOf(msg.sender)){
-            mex.mint(address(this),tcr.balanceOf(msg.sender));
-            mex.transfer(msg.sender, tcr.balanceOf(msg.sender));
-            mintMyceliumNFT(msg.sender);
-        } else {
-            mex.transfer(msg.sender, tcr.balanceOf(msg.sender)); 
-            mintMyceliumNFT(msg.sender);
-        }
+        IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(token));
     }
     
+    function migrate(uint userBalance) external isMintingPaused {
+        require(userBalance > 0, "No TCR to migrate");
+        bool success = tcr.transferFrom(msg.sender, address(this), userBalance);
+        require(success, "TCR could not be transfered to this contract, check allowance");
+        mex.mint(address(this),userBalance);
+        mex.transfer(msg.sender, userBalance);
+        mintMyceliumNFT(msg.sender);
+    }
+    
+    modifier notMinted(address _to) {
+      require(!wallets[_to], "Sender already has NFT");
+      _;
+    }
 
+    modifier isMintingPaused() {
+        require(!mintingPaused);
+        _;
+    }
+
+    modifier isTCR(address token){
+        require(token == address(tcr), "Not TCR Address");
+        _;
+    }
 }

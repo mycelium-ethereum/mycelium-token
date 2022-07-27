@@ -21,14 +21,10 @@ contract MexNFT is ERC721URIStorage, Ownable {
     }
 
     modifier onlyCreator() {
-        require(msg.sender == migrateContract, "Only migrate contract can call mint function"); // If it is incorrect here, it reverts.
+        require(msg.sender == migrateContract, "caller not minter");
         _;                       
     } 
     
-    /*
-        Called directly via migrate contract.
-        notMinted - prevents an address from minting multiple NFTS
-    */
     function mintNFT(address _to) external onlyCreator
     {
         _tokenIds.increment();
