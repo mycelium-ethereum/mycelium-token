@@ -12,9 +12,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.0;
-
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+pragma solidity ^0.8.9;
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 interface IMexToken is IERC20 {
     function mint(address to, uint256 amount) external;
