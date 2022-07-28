@@ -1,23 +1,35 @@
 {
-  "name": "mextoken",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mycelium-ethereum/MexToken.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mycelium-ethereum/MexToken/issues"
-  },
-  "homepage": "https://github.com/mycelium-ethereum/MexToken#readme",
-  "devDependencies": {
-    "@openzeppelin/contracts": "^4.7.0",
-    "hardhat": "^2.10.0"
-  }
+	"name": "mextoken",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "NODE_ENV=test mocha --timeout 10000",
+		"build": "waffle"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mycelium-ethereum/MexToken.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/mycelium-ethereum/MexToken/issues"
+	},
+	"homepage": "https://github.com/mycelium-ethereum/MexToken#readme",
+	"devDependencies": {
+		"@nomiclabs/hardhat-ethers": "^2.1.0",
+		"@openzeppelin/contracts": "^4.7.0",
+		"chai": "^4.3.6",
+		"ethereum-waffle": "^3.4.4",
+		"ethers": "^5.6.9",
+		"hardhat": "^2.10.0",
+		"mocha": "^10.0.0",
+		"ts-node": "^10.9.1"
+	},
+	"dependencies": {
+		"dotenv": "^16.0.1",
+		"erc20permit": "^0.1.1",
+		"solc": "^0.8.15"
+	}
 }

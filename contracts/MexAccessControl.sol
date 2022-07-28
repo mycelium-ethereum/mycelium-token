@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/address.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 // This contract maintains the old AccessControl behaviour which is used by BalancerGovernanceToken in production
 
