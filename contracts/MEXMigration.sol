@@ -67,13 +67,21 @@ contract MexMigration is MexAccessControl {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
     }
+
+    function migrate(uint amount, address to) external notPaused {
+        _migrate(amount, to);
+    }
     
     function migrate(uint amount) external notPaused {
+        _migrate(amount, msg.sender);
+    }
+
+    function _migrate(uint amount, address to) internal notPaused {
         require(amount > 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(msg.sender, address(this), amount);
+        bool success = tcr.transferFrom(to, address(0), amount);
         require(success, "TCR Transfer Error");
-        mex.mint(msg.sender, amount);
-        mintMyceliumNFT(msg.sender);
+        mex.mint(to, amount);
+        mintMyceliumNFT(to);
     }
     
     modifier notMinted(address _to) {
