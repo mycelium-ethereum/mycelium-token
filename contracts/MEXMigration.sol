@@ -68,12 +68,11 @@ contract MexMigration is MexAccessControl {
         IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
     }
     
-    function migrate(uint amount) external isMintingPaused {
+    function migrate(uint amount) external notPaused {
         require(amount > 0, "No TCR to migrate");
         bool success = tcr.transferFrom(msg.sender, address(this), amount);
         require(success, "TCR Transfer Error");
-        mex.mint(address(this), amount);
-        mex.transfer(msg.sender, amount);
+        mex.mint(msg.sender, amount);
         mintMyceliumNFT(msg.sender);
     }
     
@@ -82,7 +81,7 @@ contract MexMigration is MexAccessControl {
       _;
     }
 
-    modifier isMintingPaused() {
+    modifier notPaused() {
         require(!mintingPaused);
         _;
     }
