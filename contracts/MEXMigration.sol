@@ -71,7 +71,7 @@ contract MexMigration is MexAccessControl {
     function migrate(uint amount) external isMintingPaused {
         require(amount > 0, "No TCR to migrate");
         bool success = tcr.transferFrom(msg.sender, address(this), amount);
-        require(success, "TCR could not be transfered to this contract, check allowance");
+        require(success, "TCR Transfer Error");
         mex.mint(address(this), amount);
         mex.transfer(msg.sender, amount);
         mintMyceliumNFT(msg.sender);
