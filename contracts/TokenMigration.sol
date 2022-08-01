@@ -50,7 +50,6 @@ contract TokenMigration is AccessControl {
 
     function mintMyceliumNFT(address _to) internal notMinted(_to)
     {   
-        require(myc.balanceOf(_to) > 0, "Have Not Migrated");
         setWallet(_to);
         nft.mintNFT(_to);
     }
@@ -71,20 +70,22 @@ contract TokenMigration is AccessControl {
         IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
     }
 
-    function migrate(uint amount, address to) external notPaused {
-        _migrate(amount, to);
+    function migrateTo(uint amount, address to) external notPaused {
+        _migrate(amount, to, msg.sender);
     }
     
     function migrate(uint amount) external notPaused {
-        _migrate(amount, msg.sender);
+        _migrate(amount, msg.sender, msg.sender);
     }
 
-    function _migrate(uint amount, address to) internal notPaused {
+    function _migrate(uint amount, address to, address from) internal notPaused {
         require(amount > 0, "No TCR to migrate");
-        bool success = tcr.transferFrom(to, address(0), amount);
+        // todo: add counter for amount of tokens "burned" via migration
+        bool success = tcr.transferFrom(from, address(this), amount);
         require(success, "TCR Transfer Error");
         IERC20Mintable(address(myc)).mint(to, amount);
-        mintMyceliumNFT(to);
+        // todo: re add in NFT
+        // mintMyceliumNFT(to);
     }
     
     modifier notMinted(address _to) {
