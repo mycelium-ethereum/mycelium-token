@@ -1,13 +1,24 @@
+# MYC token
+This repo holds the code for the Mycelium Token (MYC).
+
+For the token contract itself, see `contracts/MYCToken.sol`.
+
+For the migration contract to migrate from TCR to MYC, see `contracts/TokenMigration.sol`
+
+To learn more about the migration from Tracer to Mycelium, see [here](https://discourse.tracer.finance/)
+
+# Development
+
 To setup project run:
 
 ```
-npm install
+yarn install
 ```
 
 To compile contracts:
 
 ```
-npx hardhat compile
+yarn compile
 ```
 
 To Deploy:
@@ -20,7 +31,8 @@ To Deploy:
 npx hardhat --network Network run scripts/deploy.js
 ```
 
-ifps commands - No need to run
+## NFT
+ifps commands - Only for the setup of the NFT
 
 ```
 ipfs init

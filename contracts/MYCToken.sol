@@ -15,11 +15,10 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./openzeppelin/ERC20Burnable.sol";
-import "./openzeppelin/ERC20Permit.sol";
-import "./MexAccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "./AccessControl.sol";
 
-contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
+contract MexToken is MexAccessControl, ERC20, ERC20Burnable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
     bool public mintingPaused;
@@ -32,7 +31,7 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
         address admin,
         string memory name,
         string memory symbol
-    ) ERC20(name, symbol) ERC20Permit(name) {
+    ) ERC20(name, symbol) {
         _setupDecimals(18);
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         _setupRole(MINTER_ROLE, admin);
@@ -62,10 +61,5 @@ contract MexToken is MexAccessControl, ERC20, ERC20Burnable, ERC20Permit {
     function mint(address recipient, uint256 amount) external isMintingPaused{
         require(hasRole(MINTER_ROLE, msg.sender), "NOT_MINTER");
         _mint(recipient, amount);
-    }
-
-    function snapshot() external {
-        require(hasRole(SNAPSHOT_ROLE, msg.sender), "NOT_SNAPSHOTTER");
-        emit Snapshot(0);
     }
 }
