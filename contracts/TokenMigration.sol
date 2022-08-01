@@ -15,7 +15,8 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "./AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
 import "./MigrationNFT.sol";
 
 interface IERC20Mintable {
@@ -23,9 +24,9 @@ interface IERC20Mintable {
 }
 contract TokenMigration is AccessControl { 
 
-    IERC20 myc;
-    IERC20 tcr;
-    MigrationNFT nft;
+    IERC20 public myc;
+    IERC20 public tcr;
+    MigrationNFT public nft;
     bool public mintingPaused;
     mapping (address => bool) public wallets;
 
