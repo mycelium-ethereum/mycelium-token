@@ -42,7 +42,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
  * grant and revoke this role. Extra precautions should be taken to secure
  * accounts that have been granted it.
  */
-abstract contract MexAccessControl {
+abstract contract AccessControl {
     using EnumerableSet for EnumerableSet.AddressSet;
     using Address for address;
 

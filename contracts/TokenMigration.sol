@@ -15,15 +15,17 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "./MexAccessControl.sol";
-import "./interfaces/IMexToken.sol";
-import "./MexNFT.sol";
+import "./AccessControl.sol";
+import "./MigrationNFT.sol";
 
-contract MexMigration is MexAccessControl { 
+interface IERC20Mintable {
+    function mint(address to, uint amount) external;
+}
+contract TokenMigration is AccessControl { 
 
-    IMexToken mex;
+    IERC20 myc;
     IERC20 tcr;
-    MexNFT mexNFT;
+    MigrationNFT nft;
     bool public mintingPaused;
     mapping (address => bool) public wallets;
 
@@ -31,14 +33,14 @@ contract MexMigration is MexAccessControl {
 
     constructor(
         address admin,
-        address _mex,
+        address _myc,
         address _tcr,
-        address _mexNFT
+        address _nft
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        mex = IMexToken(_mex);
+        myc = IERC20(_myc);
         tcr = IERC20(_tcr);
-        mexNFT = MexNFT(_mexNFT);
+        nft = MigrationNFT(_nft);
     }
 
     function setWallet(address recipient) private {
@@ -47,9 +49,9 @@ contract MexMigration is MexAccessControl {
 
     function mintMyceliumNFT(address _to) internal notMinted(_to)
     {   
-        require(mex.balanceOf(_to) > 0, "Have Not Migrated");
+        require(myc.balanceOf(_to) > 0, "Have Not Migrated");
         setWallet(_to);
-        mexNFT.mintNFT(_to);
+        nft.mintNFT(_to);
     }
 
     function pauseMinting() external {
@@ -80,7 +82,7 @@ contract MexMigration is MexAccessControl {
         require(amount > 0, "No TCR to migrate");
         bool success = tcr.transferFrom(to, address(0), amount);
         require(success, "TCR Transfer Error");
-        mex.mint(to, amount);
+        IERC20Mintable(address(myc)).mint(to, amount);
         mintMyceliumNFT(to);
     }
     
