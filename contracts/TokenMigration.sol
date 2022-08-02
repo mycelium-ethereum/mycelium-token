@@ -71,6 +71,7 @@ contract TokenMigration is AccessControl {
     }
 
     function migrateTo(uint amount, address to) external notPaused {
+        require(to != address(0), "Migrating to 0 address");
         _migrate(amount, to, msg.sender);
     }
     
