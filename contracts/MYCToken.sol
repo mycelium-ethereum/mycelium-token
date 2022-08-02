@@ -39,18 +39,14 @@ contract MYCToken is AccessControl, ERC20, ERC20Burnable {
         require(
             hasRole(MINTING_PAUSER, msg.sender) ||
             hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
-            "NOT_PAUSER"
+            "MYC:NOT_PAUSER"
         );
         mintingPaused = value;
     }
 
-    function mint(address recipient, uint256 amount) external canMint {
-        require(hasRole(MINTER_ROLE, msg.sender), "NOT_MINTER");
+    function mint(address recipient, uint256 amount) external {
+        require(!mintingPaused, "MYC:MINTING_PAUSED");
+        require(hasRole(MINTER_ROLE, msg.sender), "MYC:NOT_MINTER");
         _mint(recipient, amount);
-    }
-
-    modifier canMint() {
-        require(!mintingPaused, "MINTING_PAUSED");
-        _;
     }
 }
