@@ -18,12 +18,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract MexToken is AccessControl, ERC20, ERC20Burnable {
+contract MYCToken is AccessControl, ERC20, ERC20Burnable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
+    bytes32 public constant MINTING_PAUSER = keccak256("MINTING_PAUSER");
     bool public mintingPaused;
-    uint8 private _decimals;
-
 
     event Snapshot(uint256 id);
 
@@ -32,34 +30,27 @@ contract MexToken is AccessControl, ERC20, ERC20Burnable {
         string memory name,
         string memory symbol
     ) ERC20(name, symbol) {
-        _setupDecimals(18);
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         _setupRole(MINTER_ROLE, admin);
-        _setupRole(SNAPSHOT_ROLE, admin);
+        _setupRole(MINTING_PAUSER, admin);
     }
 
-    modifier isMintingPaused() {
-        require(!mintingPaused);
-
-        _;
+    function setMintingPaused(bool value) external {
+        require(
+            hasRole(MINTING_PAUSER, msg.sender) ||
+            hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "NOT_PAUSER"
+        );
+        mintingPaused = value;
     }
 
-    function _setupDecimals(uint8 decimals_) internal {
-        _decimals = decimals_;
-    }
-
-    function pauseMinting() external {
-         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-         mintingPaused = true;
-    }
-
-    function resumeMinting() external {
-         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-         mintingPaused = false;
-    }
-
-    function mint(address recipient, uint256 amount) external isMintingPaused{
+    function mint(address recipient, uint256 amount) external canMint {
         require(hasRole(MINTER_ROLE, msg.sender), "NOT_MINTER");
         _mint(recipient, amount);
+    }
+
+    modifier canMint() {
+        require(!mintingPaused, "MINTING_PAUSED");
+        _;
     }
 }
