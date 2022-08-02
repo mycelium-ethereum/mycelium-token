@@ -24,9 +24,9 @@ interface IERC20Mintable {
 }
 contract TokenMigration is AccessControl { 
 
-    IERC20 public myc;
-    IERC20 public tcr;
-    MigrationNFT public nft;
+    IERC20 public immutable myc;
+    IERC20 public immutable tcr;
+    MigrationNFT public immutable nft;
     bool public mintingPaused;
     mapping (address => bool) public wallets;
 
