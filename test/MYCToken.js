@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Migration Contract", function () {
+describe("Mycelium Token Contract", function () {
   let signers, MYC;
   beforeEach(async () => {
     signers = await ethers.getSigners();
@@ -57,7 +57,7 @@ describe("Migration Contract", function () {
           signers[5].address,
           ethers.utils.parseEther("100")
         )
-      ).to.be.revertedWith("MINTING_PAUSED");
+      ).to.be.revertedWith("MYC:MINTING_PAUSED");
     });
 
     it("reverts if non minter role", async () => {
@@ -66,7 +66,7 @@ describe("Migration Contract", function () {
           signers[5].address,
           ethers.utils.parseEther("100")
         )
-      ).to.be.revertedWith("NOT_MINTER");
+      ).to.be.revertedWith("MYC:NOT_MINTER");
     });
   });
 
@@ -93,7 +93,7 @@ describe("Migration Contract", function () {
 
     it("reverts if non minting pauser or default admin", async () => {
       expect(MYC.connect(signers[7]).setMintingPaused(true)).to.be.revertedWith(
-        "NOT_PAUSER"
+        "MYC:NOT_PAUSER"
       );
     });
   });
