@@ -79,7 +79,7 @@ contract TokenMigration is AccessControl {
     }
 
     function _migrate(uint amount, address to, address from) internal notPaused {
-        require(amount > 0, "No TCR to migrate");
+        require(amount > 0, "Invalid migration amount");
         // todo: add counter for amount of tokens "burned" via migration
         bool success = tcr.transferFrom(from, address(this), amount);
         require(success, "TCR Transfer Error");

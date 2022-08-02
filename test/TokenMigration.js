@@ -59,14 +59,18 @@ describe("Migration Contract", function () {
         })
 
         it("reverts if no approval", async() => {
-
+            await expect(
+                migrationContract.connect(signers[3]).migrateTo(ethers.utils.parseEther("100"), signers[4].address)
+            ).to.be.reverted
         })
 
         it("reverts if amount < 0", async() => {
-
+            await expect(
+                migrationContract.connect(signers[3]).migrateTo(ethers.utils.parseEther("0"), signers[4].address)
+            ).to.be.revertedWith("Invalid migration amount")
         })
 
-        it("mints an NFT", async() => {
+        it.skip("mints an NFT", async() => {
 
         })
     })
