@@ -20,87 +20,71 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./MigrationNFT.sol";
 
 interface IERC20Mintable {
-    function mint(address to, uint amount) external;
+    function mint(address to, uint256 amount) external;
 }
-contract TokenMigration is AccessControl { 
 
+contract TokenMigration is AccessControl {
     IERC20 public immutable myc;
     IERC20 public immutable tcr;
-    MigrationNFT public immutable nft;
+    MigrationNFT public nft;
     bool public mintingPaused;
-    mapping (address => bool) public wallets;
+    mapping(address => bool) public mintedNFT;
 
-    event Migrated(address,uint);
+    event Migrated(address, uint256);
 
     constructor(
         address admin,
         address _myc,
-        address _tcr,
-        address _nft
+        address _tcr
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         myc = IERC20(_myc);
         tcr = IERC20(_tcr);
+    }
+
+    function setNFTContract(address _nft) public {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         nft = MigrationNFT(_nft);
     }
 
-    function setWallet(address recipient) private {
-        wallets[recipient] = true;
-    }
-
-    function mintMyceliumNFT(address _to) internal notMinted(_to)
-    {   
-        setWallet(_to);
-        nft.mintNFT(_to);
-    }
-
-    function pauseMinting() external {
-         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-         mintingPaused = true;
-    }
-
-    function resumeMinting() external {
-         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-         mintingPaused = false;
-    }
-
-    
-    function withdrawTokens(address token) external isTCR(token) {
+    function setMintingState(bool state) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
+        mintingPaused = state;
     }
 
-    function migrateTo(uint amount, address to) external notPaused {
+    function withdrawTokens(address token) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
+        IERC20(token).transfer(
+            msg.sender,
+            IERC20(token).balanceOf(address(this))
+        );
+    }
+
+    function migrateTo(uint256 amount, address to) external {
         require(to != address(0), "Migrating to 0 address");
         _migrate(amount, to, msg.sender);
     }
-    
-    function migrate(uint amount) external notPaused {
+
+    function migrate(uint256 amount) external {
         _migrate(amount, msg.sender, msg.sender);
     }
 
-    function _migrate(uint amount, address to, address from) internal notPaused {
-        require(amount > 0, "Invalid migration amount");
+    function _migrate(
+        uint256 amount,
+        address to,
+        address from
+    ) internal {
+        require(!mintingPaused, "MINTING_PAUSED");
+        require(amount > 0, "INVALID_AMOUNT");
         // todo: add counter for amount of tokens "burned" via migration
         bool success = tcr.transferFrom(from, address(this), amount);
-        require(success, "TCR Transfer Error");
+        require(success, "XFER_ERROR");
         IERC20Mintable(address(myc)).mint(to, amount);
-        // todo: re add in NFT
-        // mintMyceliumNFT(to);
-    }
-    
-    modifier notMinted(address _to) {
-      require(!wallets[_to], "Sender already has NFT");
-      _;
-    }
-
-    modifier notPaused() {
-        require(!mintingPaused);
-        _;
-    }
-
-    modifier isTCR(address token){
-        require(token == address(tcr), "Not TCR Address");
-        _;
+        
+        // issue NFT if this account has not yet migrated before
+        if (!mintedNFT[to]) {
+            mintedNFT[to] = true;
+            nft.mintNFT(to);
+        }
     }
 }
