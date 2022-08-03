@@ -14,9 +14,9 @@ module.exports = {
     hardhat: {},
   },
   gasReporter: {
-    currency: 'USD',
+    currency: "USD",
     gasPrice: 15,
     enabled: true,
-    coinmarketcap: process.env.CMC_API
-  }
+    coinmarketcap: process.env.CMC_API,
+  },
 };
