@@ -48,7 +48,7 @@ contract TokenMigration is AccessControl {
     /**
     * @notice allows an admin to enable and disable migration / minting
     */
-    function setMintingState(bool state) external {
+    function setMintingPaused(bool state) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         mintingPaused = state;
     }
