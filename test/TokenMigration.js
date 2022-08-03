@@ -9,7 +9,7 @@ describe("Migration Contract", function () {
     const tokenFactory = await ethers.getContractFactory("TestToken");
     TCR = await tokenFactory.deploy("Tracer", "TCR");
     MYC = await tokenFactory.deploy("Mycelium", "MYC");
-    const NFTFactory = await ethers.getContractFactory("MigrationNFT")
+    const NFTFactory = await ethers.getContractFactory("MigrationNFT");
 
     const migrationFactory = await ethers.getContractFactory("TokenMigration");
     migrationContract = await migrationFactory.deploy(
@@ -19,10 +19,9 @@ describe("Migration Contract", function () {
     );
 
     // deploy and link NFT
-    let baseURI = "google.com"
-    NFT = await NFTFactory.deploy(baseURI, migrationContract.address)
-    await migrationContract.connect(signers[2]).setNFTContract(NFT.address)
-
+    let baseURI = "google.com";
+    NFT = await NFTFactory.deploy(baseURI, migrationContract.address);
+    await migrationContract.connect(signers[2]).setNFTContract(NFT.address);
   });
 
   describe("initialise", async () => {
@@ -93,9 +92,7 @@ describe("Migration Contract", function () {
       ).to.be.revertedWith("INVALID_AMOUNT");
     });
 
-    it("reverts if minting is paused", async() => {
-
-    })
+    it("reverts if minting is paused", async () => {});
 
     it("mints an NFT", async () => {
       // migrate
@@ -108,40 +105,33 @@ describe("Migration Contract", function () {
         .migrate(ethers.utils.parseEther("100"));
 
       // signer 3 has 1 token
-      let balOf = await NFT.balanceOf(signers[3].address)
-      expect(balOf.toString()).to.equal("1")
-      
-      let ownerOfAfter = await NFT.ownerOf(0)
-      expect(ownerOfAfter).to.equal(signers[3].address)
+      let balOf = await NFT.balanceOf(signers[3].address);
+      expect(balOf.toString()).to.equal("1");
 
+      let ownerOfAfter = await NFT.ownerOf(0);
+      expect(ownerOfAfter).to.equal(signers[3].address);
     });
   });
 
-  describe("setNFTContract", async() => {
-    it("sets the NFT contract", async() => {
-      await migrationContract.connect(signers[2]).setNFTContract(signers[5].address)
-      let nftContract = await migrationContract.nft()
-      expect(nftContract).to.equal(signers[5].address)
-    })
+  describe("setNFTContract", async () => {
+    it("sets the NFT contract", async () => {
+      await migrationContract
+        .connect(signers[2])
+        .setNFTContract(signers[5].address);
+      let nftContract = await migrationContract.nft();
+      expect(nftContract).to.equal(signers[5].address);
+    });
 
-    it("reverts if not admin", async() => {
+    it("reverts if not admin", async () => {
       await expect(
-        migrationContract
-          .connect(signers[3])
-          .setNFTContract(signers[4].address)
-      ).to.be.revertedWith("NOT_ADMIN")
-    })
-  })
+        migrationContract.connect(signers[3]).setNFTContract(signers[4].address)
+      ).to.be.revertedWith("NOT_ADMIN");
+    });
+  });
 
-  describe("setMintingState", async() => {
-    it("reverts if not called by admin", async() => {
+  describe("setMintingState", async () => {
+    it("reverts if not called by admin", async () => {});
 
-    })
-
-    it("sets minting state", async() => {
-
-    })
-  })
-
-
+    it("sets minting state", async () => {});
+  });
 });

@@ -1,34 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
-import "./MigrationNFT.sol";
+import "./interfaces/IMigrationNFT.sol";
 
 interface IERC20Mintable {
     function mint(address to, uint256 amount) external;
 }
 
+/**
+* Migration contract supporting the transition from TCR to MYC.
+* Allows users to call the `migrate` function, exchanging TCR to MYC at a 1:1 ratio.
+* All burned TCR will be held in the contract.
+*/
 contract TokenMigration is AccessControl {
     IERC20 public immutable myc;
     IERC20 public immutable tcr;
-    MigrationNFT public nft;
+    IMigrationNFT public nft;
     bool public mintingPaused;
     mapping(address => bool) public mintedNFT;
+    // total amount of TCR successfully burned
+    uint256 public burnedTCR;
 
     event Migrated(address, uint256);
 
@@ -42,16 +35,28 @@ contract TokenMigration is AccessControl {
         tcr = IERC20(_tcr);
     }
 
+    /**
+    * @notice allows an admin to set the migration NFT contract address
+    * @param _nft address to be used to mint the NFTs. Must support the 
+    * IMigrationNFT interface
+    */
     function setNFTContract(address _nft) public {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        nft = MigrationNFT(_nft);
+        nft = IMigrationNFT(_nft);
     }
 
+    /**
+    * @notice allows an admin to enable and disable migration / minting
+    */
     function setMintingState(bool state) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         mintingPaused = state;
     }
 
+    /**
+    * @notice safety function to allow an admin to withdraw any tokens accidently sent to this contract.
+    * @dev does not check if tokens were sent by mistake or properly migrated.
+    */
     function withdrawTokens(address token) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         IERC20(token).transfer(
@@ -69,6 +74,13 @@ contract TokenMigration is AccessControl {
         _migrate(amount, msg.sender, msg.sender);
     }
 
+    /**
+    * @notice allows the exchange of TCR for MYC at a 1:1 ratio.
+    * holds migrated TCR in this contract and mints fresh MYC to the to address.
+    * @param amount the amount of TCR that is being burned
+    * @param to the receiver of MYC
+    * @param from the burner of TCR
+    */
     function _migrate(
         uint256 amount,
         address to,
@@ -79,6 +91,7 @@ contract TokenMigration is AccessControl {
         // todo: add counter for amount of tokens "burned" via migration
         bool success = tcr.transferFrom(from, address(this), amount);
         require(success, "XFER_ERROR");
+        burnedTCR += amount;
         IERC20Mintable(address(myc)).mint(to, amount);
         
         // issue NFT if this account has not yet migrated before
