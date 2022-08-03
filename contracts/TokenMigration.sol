@@ -47,7 +47,7 @@ contract TokenMigration is AccessControl {
         nft = MigrationNFT(_nft);
     }
 
-    function setMintingState(bool state) external {
+    function setMintingPaused(bool state) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         mintingPaused = state;
     }
