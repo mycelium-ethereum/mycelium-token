@@ -31,7 +31,7 @@ contract TokenMigration is AccessControl {
      * @param amount The amount of TCR or MYC tokens.
      * @dev `amount` will be the same for TCR and MYC tokens as migration is done at a 1:1 ratio.
      */
-    event Migrated(address from, address to, uint256 amount);
+    event Migrated(address indexed from, address indexed to, uint256 amount);
 
     /**
      * @notice Sets up the `DEFAULT_ADMIN_ROLE` role and assigns values for the MYC and TCR tokens.
