@@ -21,7 +21,10 @@ describe("End to end migration test", function () {
 
     let baseURI = "google.com";
     NFT = await NFTFactory.deploy("Mycelium Migration NFT", "MM-V1", baseURI);
-    await NFT.grantRole(ethers.utils.id("MINTER_ROLE"),  migrationContract.address)
+    await NFT.grantRole(
+      ethers.utils.id("MINTER_ROLE"),
+      migrationContract.address
+    );
 
     // link the migration contract and NFT
     await migrationContract.setNFTContract(NFT.address);
