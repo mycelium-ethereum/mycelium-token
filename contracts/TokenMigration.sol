@@ -4,10 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IMigrationNFT.sol";
-
-interface IERC20Mintable {
-    function mint(address to, uint256 amount) external;
-}
+import "./interfaces/IMYCToken.sol";
 
 /**
  * @title A TCR token to MYC token migration contract.
@@ -16,10 +13,9 @@ interface IERC20Mintable {
  * @dev All burned TCR will be held in the contract.
  */
 contract TokenMigration is AccessControl {
-    IERC20 public immutable myc;
+    address public immutable myc;
     IERC20 public immutable tcr;
     IMigrationNFT public nft;
-    bool public mintingPaused;
     mapping(address => bool) public mintedNFT;
     // total amount of TCR successfully burned
     uint256 public burnedTCR;
@@ -45,7 +41,7 @@ contract TokenMigration is AccessControl {
         address _tcr
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        myc = IERC20(_myc);
+        myc = _myc;
         tcr = IERC20(_tcr);
     }
 
@@ -58,16 +54,6 @@ contract TokenMigration is AccessControl {
     function setNFTContract(address _nft) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         nft = IMigrationNFT(_nft);
-    }
-
-    /**
-     * @notice Enable or disable migration & minting.
-     * @param state True of minting is to be paused, false if not.
-     * @custom:requirements `msg.sender` is a member of the `DEFAULT_ADMIN_ROLE` role.
-     */
-    function setMintingPaused(bool state) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        mintingPaused = state;
     }
 
     /**
@@ -117,13 +103,14 @@ contract TokenMigration is AccessControl {
         address to,
         address from
     ) private {
-        require(!mintingPaused, "MINTING_PAUSED");
         require(amount > 0, "INVALID_AMOUNT");
         // todo: add counter for amount of tokens "burned" via migration
         bool success = tcr.transferFrom(from, address(this), amount);
         require(success, "XFER_ERROR");
         burnedTCR += amount;
-        IERC20Mintable(address(myc)).mint(to, amount);
+
+        // will revert if minting is paused
+        IMYCToken(myc).mint(to, amount);
 
         // issue NFT if this account has not yet migrated before
         if (!mintedNFT[to]) {
