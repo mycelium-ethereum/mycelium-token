@@ -4,14 +4,15 @@ require("@nomiclabs/hardhat-ethers");
 require("@nomicfoundation/hardhat-toolbox");
 // optimisooor
 require("hardhat-gas-reporter");
-require('hardhat-deploy');
+require("hardhat-deploy");
 require("@nomiclabs/hardhat-etherscan");
 
-const ALCHEMY_TESTNET_API = process.env.ALCHEMY_TESTNET_API || ""
-const TESTNET_PRIVATE_KEY = process.env.TESTNET_PRIVATE_KEY ||
-  "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3"
-const CMC_API = process.env.CMC_API || ""
-const ETHERSCAN_API = process.env.ETHERSCAN_API || ""
+const ALCHEMY_TESTNET_API = process.env.ALCHEMY_TESTNET_API || "";
+const TESTNET_PRIVATE_KEY =
+  process.env.TESTNET_PRIVATE_KEY ||
+  "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3";
+const CMC_API = process.env.CMC_API || "";
+const ETHERSCAN_API = process.env.ETHERSCAN_API || "";
 
 /** Edit gas prices for NFT */
 module.exports = {
@@ -20,8 +21,8 @@ module.exports = {
     hardhat: {},
     goerli: {
       url: ALCHEMY_TESTNET_API,
-      accounts: [TESTNET_PRIVATE_KEY]
-    }
+      accounts: [TESTNET_PRIVATE_KEY],
+    },
   },
   gasReporter: {
     currency: "USD",
@@ -31,12 +32,12 @@ module.exports = {
   },
   verify: {
     etherscan: {
-      apiKey: ETHERSCAN_API
-    }
+      apiKey: ETHERSCAN_API,
+    },
   },
   namedAccounts: {
     deployer: {
       default: 0, // here this will by default take the first account as deployer
     },
-  }
+  },
 };

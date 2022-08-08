@@ -101,8 +101,8 @@ describe("End to end migration test", function () {
         ethers.utils.parseEther("50").toString()
       );
 
-      let nftMetadata = await NFT.tokenURI(0)
-      console.log(nftMetadata)
+      let nftMetadata = await NFT.tokenURI(0);
+      console.log(nftMetadata);
     });
   });
 });
