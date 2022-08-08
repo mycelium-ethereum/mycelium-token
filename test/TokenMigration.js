@@ -126,5 +126,4 @@ describe("Migration Contract", function () {
       ).to.be.revertedWith("NOT_ADMIN");
     });
   });
-
 });
