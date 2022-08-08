@@ -1,37 +1,44 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
-import "./MigrationNFT.sol";
+import "./interfaces/IMigrationNFT.sol";
 
 interface IERC20Mintable {
     function mint(address to, uint256 amount) external;
 }
 
+/**
+ * @title A TCR token to MYC token migration contract.
+ * @author raymogg
+ * @notice Allows users to call the `migrate` function, exchanging TCR for MYC at a 1:1 ratio.
+ * @dev All burned TCR will be held in the contract.
+ */
 contract TokenMigration is AccessControl {
     IERC20 public immutable myc;
     IERC20 public immutable tcr;
-    MigrationNFT public nft;
+    IMigrationNFT public nft;
     bool public mintingPaused;
     mapping(address => bool) public mintedNFT;
+    // total amount of TCR successfully burned
+    uint256 public burnedTCR;
 
-    event Migrated(address, uint256);
+    /**
+     * @notice Emits when some TCR tokens are migrated to MYC tokens.
+     * @param from The sender of the TCR tokens.
+     * @param to The recipient of the MYC tokens.
+     * @param amount The amount of TCR or MYC tokens.
+     * @dev `amount` will be the same for TCR and MYC tokens as migration is done at a 1:1 ratio.
+     */
+    event Migrated(address indexed from, address indexed to, uint256 amount);
 
+    /**
+     * @notice Sets up the `DEFAULT_ADMIN_ROLE` role and assigns values for the MYC and TCR tokens.
+     * @param admin The address to whom the `DEFAULT_ADMIN_ROLE` role will be assigned.
+     * @param _myc The MYC token address.
+     * @param _tcr The TCR token address.
+     */
     constructor(
         address admin,
         address _myc,
@@ -42,16 +49,33 @@ contract TokenMigration is AccessControl {
         tcr = IERC20(_tcr);
     }
 
-    function setNFTContract(address _nft) public {
+    /**
+     * @notice Set the migration NFT contract address.
+     * @param _nft Address to be used to mint the NFTs.
+     * @custom:requirements The contract at address `_nft` must implement the IMigrationNFT interface.
+     * @custom:requirements `msg.sender` is a member of the `DEFAULT_ADMIN_ROLE` role.
+     */
+    function setNFTContract(address _nft) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
-        nft = MigrationNFT(_nft);
+        nft = IMigrationNFT(_nft);
     }
 
+    /**
+     * @notice Enable or disable migration & minting.
+     * @param state True of minting is to be paused, false if not.
+     * @custom:requirements `msg.sender` is a member of the `DEFAULT_ADMIN_ROLE` role.
+     */
     function setMintingPaused(bool state) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         mintingPaused = state;
     }
 
+    /**
+     * @notice Safety function to allow an admin to withdraw any tokens accidently sent to this contract.
+     * @param token The ERC20 token address to transfer out of this contract address.
+     * @dev Does not check if tokens were sent by mistake or properly migrated.
+     * @custom:requirements `msg.sender` is a member of the `DEFAULT_ADMIN_ROLE` role.
+     */
     function withdrawTokens(address token) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "NOT_ADMIN");
         IERC20(token).transfer(
@@ -60,31 +84,52 @@ contract TokenMigration is AccessControl {
         );
     }
 
+    /**
+     * @notice Migrate `amount` TCR tokens to `amount` MYC tokens, and transfer to a specified address.
+     * @param amount The amount of TCR to be burnt, and thus MYC to be minted.
+     * @param to The recipient address of the minted MYC tokens.
+     */
     function migrateTo(uint256 amount, address to) external {
         require(to != address(0), "Migrating to 0 address");
         _migrate(amount, to, msg.sender);
     }
 
+    /**
+     * @notice Migrate `amount` TCR tokens to `amount` MYC tokens, and transfer to a the calling address.
+     * @param amount The amount of TCR to be burnt, and thus MYC to be minted.
+     */
     function migrate(uint256 amount) external {
         _migrate(amount, msg.sender, msg.sender);
     }
 
+    /**
+     * @notice Allows the exchange of TCR for MYC at a 1:1 ratio.
+     * @param amount The amount of TCR that is being migrated to MYC.
+     * @param to The recipient address of MYC tokens.
+     * @param from The address burning their TCR.
+     * @dev This contract holds migrated TCR and mints fresh MYC to the `to` address.
+     * @dev Emits a `Migrated` event.
+     * @custom:requirement `mintingPaused == false`.
+     * @custom:requirement `amount > 0`.
+     */
     function _migrate(
         uint256 amount,
         address to,
         address from
-    ) internal {
+    ) private {
         require(!mintingPaused, "MINTING_PAUSED");
         require(amount > 0, "INVALID_AMOUNT");
         // todo: add counter for amount of tokens "burned" via migration
         bool success = tcr.transferFrom(from, address(this), amount);
         require(success, "XFER_ERROR");
+        burnedTCR += amount;
         IERC20Mintable(address(myc)).mint(to, amount);
-        
+
         // issue NFT if this account has not yet migrated before
         if (!mintedNFT[to]) {
             mintedNFT[to] = true;
             nft.mintNFT(to);
         }
+        emit Migrated(from, to, amount);
     }
 }

@@ -4,8 +4,9 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/IMigrationNFT.sol";
 
-contract MigrationNFT is ERC721URIStorage, Ownable {
+contract MigrationNFT is ERC721URIStorage, Ownable, IMigrationNFT {
 
     uint256 public _tokenIds;
     string public uri;
