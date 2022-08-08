@@ -20,7 +20,11 @@ describe("Migration Contract", function () {
 
     // deploy and link NFT
     let baseURI = "google.com";
-    NFT = await NFTFactory.deploy(baseURI, migrationContract.address);
+    NFT = await NFTFactory.deploy("Mycelium Migration NFT", "MM-V1", baseURI);
+    await NFT.grantRole(
+      ethers.utils.id("MINTER_ROLE"),
+      migrationContract.address
+    );
     await migrationContract.connect(signers[2]).setNFTContract(NFT.address);
   });
 
@@ -92,16 +96,6 @@ describe("Migration Contract", function () {
       ).to.be.revertedWith("INVALID_AMOUNT");
     });
 
-    it("reverts if minting is paused", async () => {
-      await migrationContract.connect(signers[2]).setMintingPaused(true);
-
-      await expect(
-        migrationContract
-          .connect(signers[3])
-          .migrateTo(ethers.utils.parseEther("100"), signers[4].address)
-      ).to.be.revertedWith("MINTING_PAUSED");
-    });
-
     it("mints an NFT", async () => {
       // migrate
       await TCR.connect(signers[3]).approve(
@@ -134,24 +128,6 @@ describe("Migration Contract", function () {
       await expect(
         migrationContract.connect(signers[3]).setNFTContract(signers[4].address)
       ).to.be.revertedWith("NOT_ADMIN");
-    });
-  });
-
-  describe("setMintingState", async () => {
-    it("reverts if not called by admin", async () => {
-      await expect(
-        migrationContract.connect(signers[3]).setMintingPaused(true)
-      ).to.be.revertedWith("NOT_ADMIN");
-    });
-
-    it("sets minting state", async () => {
-      let stateBefore = await migrationContract.mintingPaused();
-      expect(stateBefore).to.be.false;
-
-      await migrationContract.connect(signers[2]).setMintingPaused(true);
-
-      let stateAfter = await migrationContract.mintingPaused();
-      expect(stateAfter).to.be.true;
     });
   });
 });
