@@ -12,5 +12,5 @@ interface IMigrationNFT  {
     * @notice mints a single migration NFT to the to address
     * @param _to the receiver of the NFT.
     */
-    function mintNFT(address _to) external;
+    function mint(address _to) external;
 }

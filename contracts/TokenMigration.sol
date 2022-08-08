@@ -115,7 +115,7 @@ contract TokenMigration is AccessControl {
         // issue NFT if this account has not yet migrated before
         if (!mintedNFT[to]) {
             mintedNFT[to] = true;
-            nft.mintNFT(to);
+            nft.mint(to);
         }
         emit Migrated(from, to, amount);
     }

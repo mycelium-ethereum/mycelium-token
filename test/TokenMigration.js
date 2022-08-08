@@ -20,7 +20,8 @@ describe("Migration Contract", function () {
 
     // deploy and link NFT
     let baseURI = "google.com";
-    NFT = await NFTFactory.deploy(baseURI, migrationContract.address);
+    NFT = await NFTFactory.deploy("Mycelium Migration NFT", "MM-V1", baseURI);
+    await NFT.grantRole(ethers.utils.id("MINTER_ROLE"),  migrationContract.address)
     await migrationContract.connect(signers[2]).setNFTContract(NFT.address);
   });
 
