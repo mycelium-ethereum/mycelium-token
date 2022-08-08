@@ -33,13 +33,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         log: true,
     });
 
-    // todo insert IPFS link to contract metadata
-    let baseURI = "google.com";
+    // testing metadata link
+    let baseURI = "ipfs://QmSWKCuX1p8yuaN4o2TALkCX66NntwEXHPbvXadfo6rboC";
     let nftContract = await deploy('MigrationNFT', {
         from: deployer,
         args: [
-            baseURI,
-            migrationContract.address
+            "Test Mycelium Migration",
+            "TMM",
+            baseURI
         ],
         log: true,
     });
@@ -59,6 +60,19 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // set the migration contract as a minter of MYC
     await execute(
         "MYCToken",
+        {
+            from: deployer,
+            // gasLimit: 100000000,
+            log: true,
+        },
+        "grantRole",
+        [ethers.utils.id("MINTER_ROLE"), migrationContract.address]
+    )
+
+
+    // set the migration contract as a minter of NFTs
+    await execute(
+        "MigrationNFT",
         {
             from: deployer,
             // gasLimit: 100000000,
