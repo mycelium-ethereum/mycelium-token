@@ -1,5 +1,12 @@
 {
-  "name": "Mycelium NFT",
-  "description": "Congratulations on migrating from TCR to MEX, the future is bright",
-  "image": "https://ipfs.io/ipfs/QmQEVVLJUR1WLN15S49rzDJsSP7za9DxeqpUzWuG4aondg"
+  "name": "Mycelium Migrator",
+  "description": "Thank you for being a supported of the Tracer to Mycelium migration event",
+  "image": "ipfs://QmQEVVLJUR1WLN15S49rzDJsSP7za9DxeqpUzWuG4aondg",
+  "animation_url": "ipfs://QmQEVVLJUR1WLN15S49rzDJsSP7za9DxeqpUzWuG4aondg",
+  "attributes": [
+    {
+      "trait_type": "Status", 
+      "value": "OG"
+    }
+  ]
 }

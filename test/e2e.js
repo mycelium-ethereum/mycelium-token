@@ -73,7 +73,7 @@ describe("End to end migration test", function () {
 
     it("reverts if minting is paused on the migration contract", async () => {});
 
-    it("migrates tokens", async () => {
+    it.only("migrates tokens", async () => {
       // set the migration contract as a minter
       await MYC.grantRole(
         ethers.utils.id("MINTER_ROLE"),
@@ -100,6 +100,9 @@ describe("End to end migration test", function () {
       expect(diffTCRBal.toString()).to.equal(
         ethers.utils.parseEther("50").toString()
       );
+
+      let nftMetadata = await NFT.tokenURI(0)
+      console.log(nftMetadata)
     });
   });
 });
