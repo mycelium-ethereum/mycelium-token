@@ -2,34 +2,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/IMigrationNFT.sol";
 
-contract MigrationNFT is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
+contract MigrationNFT is ERC721URIStorage, Ownable, IMigrationNFT {
 
-    Counters.Counter private _tokenIds;
-    mapping (address => bool) public Wallets;
-    string nftURI = "https://ipfs.io/ipfs/QmcJ7gQR8D6iddZpZw1rqPk71JAE4tLwUnzfFktTDXiKZA";
-    address private migrateContract;
+    uint256 public _tokenIds;
+    string public uri;
+    address public migrationContract;
 
-    constructor() ERC721("MexNFT", "NFT") {}
-
-    function setMinterAddress(address _migrateContract) external onlyOwner {
-        migrateContract = _migrateContract;
+    constructor(
+        string memory _baseURI,
+        address _migration
+    ) ERC721("MyceliumMigrator", "MM-V1") {
+        uri = _baseURI;
+        migrationContract = _migration;
     }
 
-    modifier onlyCreator() {
-        require(msg.sender == migrateContract, "caller not minter");
-        _;                       
-    } 
+    function setMinterAddress(address _migrateContract) external onlyOwner {
+        migrationContract = _migrateContract;
+    }
     
-    function mintNFT(address _to) external onlyCreator
-    {
-        _tokenIds.increment();
-        uint256 newItemId = _tokenIds.current();
-        _mint(_to, newItemId);
-        _setTokenURI(newItemId, nftURI);
+    function mintNFT(address _to) external {
+        require(msg.sender == migrationContract, "MM-V1:NOT_MINTER");
+        _safeMint(_to, _tokenIds);
+        _setTokenURI(_tokenIds, uri);
+        _tokenIds++;
     }
 }

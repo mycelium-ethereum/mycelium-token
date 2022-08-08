@@ -2,22 +2,28 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("End to end migration test", function () {
-  let signers, TCR, MYC, migrationContract;
+  let signers, TCR, MYC, migrationContract, NFT;
   beforeEach(async () => {
     signers = await ethers.getSigners();
 
     const tokenFactory = await ethers.getContractFactory("TestToken");
     const MYCTokenFactory = await ethers.getContractFactory("MYCToken");
+    const NFTFactory = await ethers.getContractFactory("MigrationNFT");
+
     TCR = await tokenFactory.deploy("Tracer", "TCR");
     MYC = await MYCTokenFactory.deploy(signers[0].address, "Mycelium", "MYC");
-
     const migrationFactory = await ethers.getContractFactory("TokenMigration");
     migrationContract = await migrationFactory.deploy(
       signers[0].address,
       MYC.address,
-      TCR.address,
-      signers[1].address
+      TCR.address
     );
+
+    let baseURI = "google.com";
+    NFT = await NFTFactory.deploy(baseURI, migrationContract.address);
+
+    // link the migration contract and NFT
+    await migrationContract.setNFTContract(NFT.address);
   });
 
   describe("end to end", async () => {
@@ -60,6 +66,8 @@ describe("End to end migration test", function () {
           .migrate(ethers.utils.parseEther("50"))
       ).to.be.revertedWith("MYC:MINTING_PAUSED");
     });
+
+    it("reverts if minting is paused on the migration contract", async () => {});
 
     it("migrates tokens", async () => {
       // set the migration contract as a minter
