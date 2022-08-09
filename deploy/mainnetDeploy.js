@@ -20,7 +20,6 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  // TODO: Put in proper metadata link
   let baseURI = "ipfs://QmdiKqVLojYJYuFY5qSWhtQradjwSmDS5ARC5ysHZwxAeC";
   let nftContract = await deploy("MigrationNFT", {
     from: deployer,
