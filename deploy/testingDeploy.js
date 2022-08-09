@@ -51,7 +51,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       log: true,
     },
     "grantRole",
-    ethers.utils.id("MINTER_ROLE"), 
+    ethers.utils.id("MINTER_ROLE"),
     migrationContract.address
   );
 
