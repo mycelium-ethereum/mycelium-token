@@ -23,10 +23,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 
   // testing metadata link
-  let baseURI = "ipfs://QmSWKCuX1p8yuaN4o2TALkCX66NntwEXHPbvXadfo6rboC";
+  let baseURI = "ipfs://QmUgpr9fWJFThXyihXyFHnbskN3k9w5UcT7jLBaoXYU8KS";
   let nftContract = await deploy("MigrationNFT", {
     from: deployer,
-    args: ["Test Mycelium Migration", "TMM", baseURI],
+    args: ["Test Mycelium Migration V2", "TMM", baseURI],
     log: true,
   });
 
@@ -51,7 +51,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       log: true,
     },
     "grantRole",
-    [ethers.utils.id("MINTER_ROLE"), migrationContract.address]
+    ethers.utils.id("MINTER_ROLE"), 
+    migrationContract.address
   );
 
   // set the migration contract as a minter of NFTs
@@ -63,7 +64,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       log: true,
     },
     "grantRole",
-    [ethers.utils.id("MINTER_ROLE"), migrationContract.address]
+    ethers.utils.id("MINTER_ROLE"),
+    migrationContract.address
   );
 
   // verify contracts to help with debugging

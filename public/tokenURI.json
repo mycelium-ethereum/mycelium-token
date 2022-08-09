@@ -1,12 +1,6 @@
 {
-  "name": "Mycelium Migrator",
-  "description": "Thank you for being a supported of the Tracer to Mycelium migration event",
-  "image": "ipfs://QmUqa77AxR6Ft8XzhzdFN4iXKgSw74sPHtMH6caX5cKZXw",
-  "animation_url": "ipfs://QmUqa77AxR6Ft8XzhzdFN4iXKgSw74sPHtMH6caX5cKZXw",
-  "attributes": [
-    {
-      "trait_type": "Status",
-      "value": "OG"
-    }
-  ]
+  "name": "Mycelium OGs",
+  "description": "This token transition NFT commemorates the early adopters and OG members of the Tracer DAO X Mycelium ecosystem. Tracer DAO built permissionless and decentralised derivative infrastructure, with no margins and no liquidations, represented by the $TCR token. This NFT belongs to those who believed in $TCR’s core mission to make financial markets more accessible from day one, and have supported our evolution to Mycelium, $MYC: a larger network committed to realizing that vision. Mycelium OG NFTs are minted to OG TCR holders to commemorate their early adoption of our trading platform and community.",
+  "image": "ipfs://QmSArqGXLwjs9cHyaqQiEvnCGGRhd6o9Ftnq9m5AYif6eW",
+  "animation_url": "ipfs://QmUqa77AxR6Ft8XzhzdFN4iXKgSw74sPHtMH6caX5cKZXw"
 }
