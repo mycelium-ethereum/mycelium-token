@@ -64,21 +64,5 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     ethers.utils.id("MINTER_ROLE"),
     migrationContract.address
   );
-
-  // verify contracts
-  await hre.run("verify:verify", {
-    address: MYC.address,
-    constructorArguments: [deployer, "Mycelium", "MYC"],
-  });
-
-  await hre.run("verify:verify", {
-    address: migrationContract.address,
-    constructorArguments: [deployer.address, MYC.address, TCR],
-  });
-
-  await hre.run("verify:verify", {
-    address: nftContract.address,
-    constructorArguments: ["Mycelium OGs", "MOGs", baseURI],
-  });
 };
 module.exports.tags = ["MainnetDeploy"];

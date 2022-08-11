@@ -11,6 +11,11 @@ const ALCHEMY_TESTNET_API = process.env.ALCHEMY_TESTNET_API || "";
 const TESTNET_PRIVATE_KEY =
   process.env.TESTNET_PRIVATE_KEY ||
   "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3";
+  const ALCHEMY_ARB_MAINNET_API = process.env.ALCHEMY_TESTNET_API || "";
+  const ALCHEMY_MAINNET_API = process.env.ALCHEMY_MAINNET_API || "";
+  const MAINNET_PRIVATE_KEY =
+    process.env.MAINNET_PRIVATE_KEY ||
+    "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3";
 const CMC_API = process.env.CMC_API || "";
 const ETHERSCAN_API = process.env.ETHERSCAN_API || "";
 
@@ -22,6 +27,14 @@ module.exports = {
     goerli: {
       url: ALCHEMY_TESTNET_API,
       accounts: [TESTNET_PRIVATE_KEY],
+    },
+    arbitrum: {
+      url: ALCHEMY_ARB_MAINNET_API,
+      accounts: [MAINNET_PRIVATE_KEY],
+    },
+    mainnet: {
+      url: ALCHEMY_MAINNET_API,
+      accounts: [MAINNET_PRIVATE_KEY],
     },
   },
   gasReporter: {
