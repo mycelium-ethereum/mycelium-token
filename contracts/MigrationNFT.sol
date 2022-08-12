@@ -9,4 +9,14 @@ contract MigrationNFT is ERC721PresetMinterPauserAutoId {
         string memory symbol,
         string memory baseTokenURI
     ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) {}
+
+    /**
+     * @dev All tokens have same metadata
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        _requireMinted(tokenId);
+
+        string memory baseURI = _baseURI();
+        return baseURI;
+    }
 }

@@ -100,6 +100,9 @@ describe("End to end migration test", function () {
       expect(diffTCRBal.toString()).to.equal(
         ethers.utils.parseEther("50").toString()
       );
+
+      let nftMetadata = await NFT.tokenURI(0);
+      console.log(nftMetadata);
     });
   });
 });
