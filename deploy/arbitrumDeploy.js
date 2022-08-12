@@ -43,4 +43,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     migrationContract.address
   );
 };
-module.exports.tags = ["MainnetDeploy"];
+module.exports.tags = ["ArbitrumDeploy"];
