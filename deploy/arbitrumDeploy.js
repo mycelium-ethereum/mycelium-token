@@ -20,7 +20,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   // link the migration contract and NFT
   await execute(
-    "TokenMigration",
+    "ArbitrumTokenMigration",
     {
       from: deployer,
       // gasLimit: 100000000,
