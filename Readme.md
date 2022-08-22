@@ -7,6 +7,19 @@ For the migration contract to migrate from TCR to MYC, see `contracts/TokenMigra
 
 To learn more about the migration from Tracer to Mycelium, see [here](https://discourse.tracer.finance/)
 
+# Addresses
+## Ethereum Mainnet
+| Contract      | Address |
+| :-----             |    :----:   |
+| MYC Token          | 0x4b13006980aCB09645131b91D259eaA111eaF5Ba  |
+| Migration Contract | 0x279C803E118609591e13e780269Cd7F77DeA0A72  |
+| Mycelium OGs NFT   | 0x72BAAa523a4662856f413B0fc0a9E3068f39fe76  |
+## Arbitrum One
+| Contract      | Address |
+| :-----             |    :----:   |
+| MYC Token          | 0xc74fe4c715510ec2f8c61d70d397b32043f55abe  |
+| Migration Contract | 0xa18c96947c651B038bc8ef80a43E32f74838BB42  |
+| Mycelium OGs NFT   | 0xcf72978cF3f17a6194A394888A1d7a4E6EfFa405  |
 # Development
 
 To setup project run:
@@ -30,21 +43,3 @@ To Deploy:
 ```
 npx hardhat --network Network run scripts/deploy.js
 ```
-
-## NFT
-ifps commands - Only for the setup of the NFT
-
-```
-ipfs init
-ipfs daemon
-ipfs add art.jpeg
-ipfs add tokenURI.json
-```
-
-For Testing:
-
-- npm run build produces json outputs
-- npm test
-
-Deployed to Rinkeby:
-https://testnets.opensea.io/assets/rinkeby/0x9f807047ef5cdf5381967e85de01a0d67c9967f3/1
